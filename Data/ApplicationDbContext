@@ -1,0 +1,12 @@
+namespace SplititActorsApi.Data
+{
+    public class ApplicationDbContext : DbContext
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Actor> Actors { get; set; } // Ensure this matches your model
+    }
+}

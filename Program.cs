@@ -11,6 +11,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register the ActorScraperService for DI
 builder.Services.AddScoped<ActorScraperService>();
 
+// Register HttpClient and AuthService
+builder.Services.AddHttpClient<AuthService>(); // Registers HttpClient to be used by AuthService
+builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("Auth")); // Configure AuthConfig from appsettings.json
+
+// Add controllers to the service container
 builder.Services.AddControllers();
 
 // Add Swagger support

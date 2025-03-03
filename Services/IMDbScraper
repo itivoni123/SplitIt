@@ -1,0 +1,50 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using HtmlAgilityPack;
+using SplititActorsApi.Models;
+
+namespace SplititActorsApi.Services
+{
+    public class IMDbScraper
+    {
+        private const string IMDbUrl = "https://www.imdb.com/list/ls054840033/";
+
+        public async Task<List<Actor>> ScrapeActorsAsync()
+        {
+            var actors = new List<Actor>();
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetStringAsync(ImdbUrl);
+
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(response);
+
+            var nodes = htmlDocument.DocumentNode.SelectNodes("//div[contains(@class,'lister-item mode-detail')]");
+
+            int rank = 1;
+            foreach (var node in nodes)
+            {
+                var nameNode = node.SelectSingleNode(".//h3/a");
+                var imageNode = node.SelectSingleNode(".//img");
+                var bioNode = node.SelectSingleNode(".//p[@class='text-muted']");
+
+                if (nameNode != null)
+                {
+                    actors.Add(new Actor
+                    {
+                        Id = rank,
+                        Name = nameNode.InnerText.Trim(),
+                        Rank = rank,
+                        ImageUrl = imageNode?.GetAttributeValue("src", ""),
+                        Bio = bioNode?.InnerText.Trim() ?? "No bio available."
+                    });
+                    rank++;
+                }
+            }
+
+            return actors;
+        }
+    }
+}
